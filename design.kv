@@ -1,0 +1,604 @@
+#:import Factory kivy.factory.Factory
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+
+<Button>:
+    font_size: "20sp"
+    color: 1, 1, 1, 1
+    background_color: 0, 1, 0, 1
+
+<NavigationButton@Button>:
+    font_size: "20sp"
+    color: 1, 1, 1, 1
+    background_color: 0, 0, 0, 0
+    canvas.before:
+        Color:
+            rgba: 0, 0.4, 0.8, 0.7
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [20]
+
+<TextInput>:
+    font_size: "20sp"
+
+<Screen>:
+    on_leave: app.record_previous_screen(self.name)
+
+<HomeScreen>:
+    on_pre_enter: self.refresh_gardens_recycleview()
+    GridLayout:
+        cols: 1
+        padding: 10
+        Label:
+            text: "My Gardens"
+            size_hint: 0.2, 0.2
+            font_size: "30sp"
+        GridLayout:
+            cols: 2
+            size_hint: 0.25, 0.25
+            spacing: 5, 0
+            NavigationButton:
+                text: "Search Plants"
+                on_release:
+                    root.manager.current = "search_plants_screen"
+                    root.manager.get_screen("search_plants_screen").clear_search_fields()
+                size_hint: 0.3, 0.3
+            NavigationButton:
+                text: "Add a Plant"
+                on_release: root.manager.current = "add_plant_screen"
+                size_hint: 0.3, 0.3
+        Label:
+            text: "All Gardens:"
+            size_hint: 0.2, 0.2
+            font_size: "23sp"
+        RecycleView:
+            id: current_gardens
+            data: root.data_for_gardens_list()
+            viewclass: "Button"
+            RecycleBoxLayout:
+                default_size: None, dp(60)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                spacing: 0, 5
+        GridLayout:
+            cols: 2
+            size_hint: 0.25, 0.25
+            spacing: 5, 0
+            NavigationButton:
+                id: garden1
+                text: "Add a Garden"
+                on_release: root.manager.current = "add_garden_screen"
+            NavigationButton
+                id: upload_image
+                text: "Upload an Image"
+                on_release: root.manager.current = "add_image_screen"
+
+<Search>:
+    name: "search_plants_screen"
+    GridLayout:
+        cols: 1
+        padding: 15, 15
+        spacing: 0, 2
+        Label:
+            id: search_title
+            text: "Search Plants"
+            font_size: "30sp"
+            size_hint: 0.7, 0.7
+        TextInput:
+            id: name_search
+            hint_text: "Name"
+        TextInput:
+            id: common_name_search
+            hint_text: "Common Name"
+        TextInput:
+            id: category_search
+            hint_text: "Category"
+        TextInput:
+            id: year_search
+            hint_text: "Year Planted"
+        TextInput:
+            id: notes_search
+            hint_text: "Notes"
+        GridLayout:
+            cols: 2
+            spacing: 1, 0
+            Button:
+                text: "Pick Garden:"
+                halign: "right"
+                size_hint_x: 0.4
+                on_release: root.manager.current = "choose_garden_from_list"
+            Label:
+                id: location_search
+                halign: "left"
+                text:""
+                font_size: "20sp"
+        NavigationButton:
+            text: "Search"
+            size_hint: 0.9, 0.9
+            on_release: root.get_results()
+        GridLayout:
+            cols: 2
+            size_hint: 1, 1
+            padding: 0, 5
+            spacing: 5, 0
+            NavigationButton:
+                text: "Clear"
+                on_release: root.clear_search_fields()
+            NavigationButton:
+                text: "Home"
+                on_release: root.manager.current = "home_screen"
+
+<ResultsScreen>:
+    on_pre_enter: self.refresh_recycleview()
+    GridLayout:
+        cols: 1
+        padding: 10
+        NavigationButton:
+            text: "Back"
+            size_hint: 0.15, 0.15
+            font_size: "20sp"
+            on_release:
+                root.manager.current = "search_plants_screen"
+                root.manager.get_screen("search_plants_screen").clear_search_fields()
+        Label:
+            text: "[u]Name  |  Common Name  |  Location[/u]"
+            markup: "True"
+            font_size: "22sp"
+            size_hint: 0.2, 0.2
+        RecycleView:
+            data: []
+            id: plant_results_rv
+            viewclass: "Button"
+            RecycleBoxLayout:
+                default_size: None, dp(80)
+                default_size_hint: 1, None
+                spacing: 0, 5
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+
+<EditPlant>
+    on_pre_enter: root.populate_input_fields()
+    GridLayout:
+        padding: 15, 15
+        cols: 1
+        Label:
+            text: "Edit Plant Information"
+            font_size: "30sp"
+            size_hint: 0.7, 0.7
+        TextInput:
+            id: name_edit
+            hint_text: "Name"
+        TextInput:
+            id: common_name_edit
+            hint_text: "Common Name"
+        TextInput:
+            id: category_edit
+            hint_text: "Category"
+        TextInput:
+            id: year_edit
+            hint_text: "Year Planted"
+        TextInput:
+            id: notes_edit
+            hint_text: "Notes"
+        GridLayout:
+            cols: 2
+            spacing: 1, 0
+            Button:
+                text: "Pick Garden:"
+                halign: "right"
+                size_hint_x: 0.4
+                on_release: root.manager.current = "choose_garden_from_list"
+            Label:
+                id: location_edit
+                halign: "left"
+                text: ""
+                font_size: "20sp"
+        NavigationButton:
+            text: "Save"
+            size_hint: 0.7, 0.7
+            on_release: root.review_updated_plant_info()
+        GridLayout:
+            cols: 2
+            size_hint: 0.9, 0.9
+            padding: 0, 5
+            NavigationButton:
+                text: "Back"
+                on_release:
+                    root.manager.current = "full_plant_info_screen"
+                    root.manager.get_screen("search_plants_screen").clear_search_fields()
+            NavigationButton:
+                text: "Home"
+                on_release: root.manager.current = "home_screen"
+
+<EditGarden>:
+    on_pre_enter: root.populate_current_info()
+    GridLayout:
+        padding: 15, 15
+        cols: 1
+        spacing: 0, 5
+        Label:
+            text: "Edit Garden Information"
+            font_size: "30sp"
+            size_hint: 0.7, 0.7
+        TextInput:
+            id: garden_name_edit
+            hint_text: "Name"
+        TextInput:
+            id: garden_notes_edit
+            hint_text: "Notes"
+        NavigationButton:
+            text: "Save"
+            size_hint: 0.7, 0.7
+            on_release: root.review_updated_garden_info()
+        GridLayout:
+            cols: 2
+            size_hint: 0.9, 0.9
+            padding: 0, 5
+            spacing: 5, 0
+            NavigationButton:
+                text: "Cancel"
+                on_release: root.manager.current = app.previous_screen
+            NavigationButton:
+                text: "Home"
+                on_release: root.manager.current = "home_screen"
+
+<FullPlantInfo>:
+    name: "full_plant_info_screen"
+    on_pre_enter: root.populate_plant_info()
+    GridLayout:
+        cols: 1
+        padding: 10
+        Label:
+            id: full_info_name
+            text: "Plant Name"
+            font_size: "30sp"
+        Label:
+            id: full_info_common_name
+            text: "Common Name"
+            font_size: "20sp"
+            markup: "True"
+        Label:
+            id: full_info_category
+            text: "Category"
+            font_size: "20sp"
+            markup: "True"
+        Label:
+            id: full_info_location
+            text: "Location"
+            font_size: "20sp"
+            markup: "True"
+        Label:
+            id: full_info_year
+            text: "Year"
+            font_size: "20sp"
+            markup: "True"
+        Label:
+            id: full_info_notes
+            text: "Notes"
+            font_size: "20sp"
+            markup: "True"
+        NavigationButton:
+            id: back_to_results
+            text: "Back"
+            size_hint: 0.7, 0.7
+            on_release:
+        GridLayout:
+            cols: 2
+            padding: 0, 10
+            spacing: 5, 5
+            NavigationButton:
+                text: "Delete"
+                on_release: root.delete_plant_popup()
+            NavigationButton:
+                text: "Edit"
+                on_release: root.manager.current = "edit_plant_screen"
+
+<AddPlant>:
+    GridLayout:
+        padding: 15, 15
+        cols: 1
+        GridLayout:
+            cols: 1
+            padding: 10
+            Label:
+                text: "Add a Plant"
+                size_hint: 0.5, 0.5
+                font_size: "25sp"
+            TextInput:
+                id: plant_name
+                hint_text: "Name"
+                size_hint: 0.7, 0.7
+            TextInput:
+                id: plant_common_name
+                hint_text: "Common Name"
+                size_hint: 0.7, 0.7
+            TextInput:
+                id: plant_category
+                hint_text: "Category"
+                size_hint: 0.7, 0.7
+            TextInput:
+                id: year_planted
+                hint_text: "Year Planted"
+                size_hint: 0.7, 0.7
+            TextInput:
+                id: notes
+                hint_text: "Notes"
+            GridLayout:
+                cols: 2
+                spacing: 1, 0
+                Button:
+                    text: "Pick Garden:"
+                    halign: "right"
+                    size_hint_x: 0.4
+                    on_release: root.manager.current = "choose_garden_from_list"
+                Label:
+                    id: plant_location
+                    halign: "left"
+                    text:""
+                    font_size: "20sp"
+            NavigationButton:
+                text: "Add"
+                on_release:
+                    root.add_plant_confirmation()
+                    root.manager.transition.direction = "left"
+                size_hint: 0.7, 0.7
+        GridLayout:
+            cols: 2
+            size_hint: 0.2, 0.2
+            padding: 0, 10
+            spacing: 5, 0
+            NavigationButton:
+                text: "Your Plants"
+                on_release:
+                    root.manager.current = "search_plants_screen"
+                    root.manager.get_screen("search_plants_screen").clear_search_fields()
+                    root.manager.transition.direction = "left"
+            NavigationButton:
+                text: "Home"
+                on_release: root.manager.current = "home_screen"
+
+
+<DatabaseConfirmationScreen>
+    GridLayout:
+        cols: 1
+        padding: 10
+        Label:
+            id: success_message
+            text: "Your plant has been added successfully!"
+            text_size: self.width, None
+            size_hint_y: 0.5
+            font_size: "23sp"
+            height: self.texture_size[1]
+        GridLayout:
+            cols: 2
+            size_hint: 0.1, 0.1
+            spacing: 5, 0
+            NavigationButton:
+                id: back_button
+                text: "Add Another Plant"
+                on_release: root.manager.current = "add_plant_screen"
+            NavigationButton:
+                text: "Home"
+                on_release:
+                    root.manager.transition.direction = "right"
+                    root.manager.current = "home_screen"
+
+<AddImageScreen>
+    GridLayout:
+        cols: 1
+        padding: 10
+        spacing: 10
+        Label:
+            text: "Add an Image"
+            size_hint: 0.2, 0.2
+        NavigationButton:
+            text: "Upload Image"
+            size_hint: 0.2, 0.2
+            cols: 1
+        Image:
+            source: "oregano.jpg"
+        NavigationButton:
+            text: "Home"
+            size_hint: 0.2, 0.2
+            on_release: root.manager.current = "home_screen"
+
+<AddGarden>
+    GridLayout:
+        padding: 15, 15
+        cols: 1
+        Label:
+            text: "Add A Garden"
+            font_size: "30sp"
+            size_hint: 0.2, 0.2
+        TextInput:
+            id: garden_name
+            hint_text:  "Garden Name"
+            size_hint: 0.2, 0.2
+        TextInput:
+            id: garden_notes
+            hint_text: "Notes"
+            size_hint: 0.5, 0.5
+        NavigationButton:
+            text: "Create Garden"
+            size_hint: 0.1, 0.1
+            on_release: root.new_garden_popup()
+        NavigationButton:
+            text: "Home"
+            size_hint: 0.1, 0.1
+            on_release: root.manager.current = "home_screen"
+
+<ShowGarden>:
+    name: "show_garden_screen"
+    on_pre_enter: root.populate_info()
+    GridLayout:
+        cols: 1
+        padding: 10
+        Label:
+            id: current_garden_name
+            text: "Garden Name"
+            markup: "True"
+            font_size: "28sp"
+            size_hint: 0.1, 0.1
+        Label:
+            id: notes_for_this_garden
+            text: "garden notes"
+            font_size: "20sp"
+            size_hint: 0.2, 0.2
+        RecycleView:
+            id: plants_list
+            data: []
+            viewclass: "Button"
+            RecycleBoxLayout:
+                default_size: None, dp(60)
+                default_size_hint: 1, None
+                spacing: 0, 5
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+        GridLayout:
+            cols: 2
+            size_hint: 0.3, 0.3
+            padding: 0, 10, 0, 5
+            spacing: 5, 5
+            NavigationButton:
+                text: "Delete\nGarden"
+                on_release: root.manager.current = "delete_garden_screen"
+            NavigationButton:
+                text: "Edit\nGarden"
+                on_release: root.manager.current = "edit_garden_screen"
+        NavigationButton:
+            text: "Home"
+            size_hint: 0.2, 0.2
+            on_release: root.manager.current = "home_screen"
+
+<ConfirmNewInfo>:
+    name: "confirm_new_info_screen"
+    GridLayout:
+        cols: 1
+        padding: 10
+        Label:
+            id: question_label
+            text: "Is this information correct?"
+            font_size: "25sp"
+            size_hint: 0.2, 0.2
+        Label:
+            id: new_info_label
+            text: "TBD"
+            font_size: "23sp"
+        GridLayout:
+            cols: 2
+            size_hint: 0.2, 0.2
+            spacing: 5, 0
+            NavigationButton:
+                id: confirmed_button
+                text: "Yes"
+            NavigationButton:
+                id: not_confirmed_button
+                text: "No"
+
+<ChooseGardenFromList>:
+    name: "choose_garden_from_list"
+    on_pre_enter: root.refresh_gardens_list()
+    GridLayout:
+        cols: 1
+        padding: 10
+        spacing: 0, 5
+        Label:
+            text: "Choose a Garden:"
+            size_hint: 0.2, 0.2
+            font_size: "25sp"
+        RecycleView:
+            id: garden_list_recycleview
+            data: root.garden_recycleview_list_data()
+            viewclass: "Button"
+            RecycleBoxLayout:
+                default_size: None, dp(60)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                spacing: 0, 5
+        NavigationButton:
+            text: "Cancel"
+            font_size: "20sp"
+            size_hint: 0.3, 0.3
+            on_release: root.manager.current = app.choose_garden_from_list_previous_screen
+
+<DeleteGarden>:
+    name: "delete_garden_screen"
+    GridLayout:
+        cols: 1
+        spacing: 0, 5
+        padding: 10
+        Label:
+            text: "Delete Your Garden"
+            font_size: "25sp"
+            size_hint: 0.3, 0.3
+        Label:
+            text: "Do you want to delete this garden\n and delete the plants\nin the garden?"
+            font_size: "20sp"
+            size_hint: 0.2, 0.2
+        Label:
+            text: "If you do not delete the plants\nthese plants will have location:\n No Garden"
+            font_size: "20sp"
+            size_hint: 0.2, 0.2
+        Button:
+            text: "Delete Garden"
+            size_hint: 0.2, 0.2
+            on_release: root.delete_garden_without_plants()
+        Button:
+            text: "Delete Garden & Plants"
+            size_hint: 0.2, 0.2
+            on_release: root.delete_garden_with_plants()
+        Button:
+            text: "Cancel"
+            size_hint: 0.2, 0.2
+            on_release: root.manager.current = app.previous_screen
+
+<RootWidget>:
+    transition: NoTransition()
+    HomeScreen:
+        name: "home_screen"
+    Search:
+        name: "search_plants_screen"
+    EditPlant:
+        name: "edit_plant_screen"
+    EditGarden:
+        name: "edit_garden_screen"
+    ShowGarden:
+        name: "show_garden_screen"
+    AddPlant:
+        name: "add_plant_screen"
+    AddImageScreen:
+        name: "add_image_screen"
+    AddGarden:
+        name: "add_garden_screen"
+    DatabaseConfirmationScreen:
+        name: "confirmation_screen"
+    ResultsScreen:
+        name: "results_screen"
+    FullPlantInfo:
+        name: "full_plant_info_screen"
+    ConfirmNewInfo:
+        name: "confirm_new_info_screen"
+    ChooseGardenFromList:
+        name: "choose_garden_from_list"
+    DeleteGarden:
+        name: "delete_garden_screen"
+
+    # canvas.before:
+    #     Color:
+    #         rgba: (1, 1, 1, 0.75)
+    #     Rectangle:
+    #         pos: self.pos
+    #         size: self.size
+    # canvas:
+    #     Color:
+    #         rgba: (0, 1, 0.2, 0.4)
+    #     Rectangle:
+    #         pos: self.pos
+    #         size: self.size
+
