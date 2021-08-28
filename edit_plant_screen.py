@@ -58,7 +58,7 @@ class EditPlantScreen(Screen):
         plant_id = App.get_running_app().current_plant_info[0]
         results = App.get_running_app().loop.run_until_complete(GardenAPIClient.update_plant(plant_id, name, common_name, category, location, year, notes))
         if results:
-            updated_results = App.get_running_app().loop.run_until_complete(GardenAPIClient.plant_search(plant_id, name="", common_name="", category="", location="", year="", notes=""))
+            updated_results = App.get_running_app().loop.run_until_complete(GardenAPIClient.plant_search(plant_id, name="", common_name="", category="", location="", year="", notes="", garden_id=""))
             for result in updated_results:
                 App.get_running_app().current_plant_info = result
             self.clear_text_inputs()

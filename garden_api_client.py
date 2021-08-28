@@ -31,13 +31,14 @@ class GardenAPIClient:
                     return False
 
     @staticmethod
-    async def add_plant(name, common_name, category, location, year, notes):
+    async def add_plant(name, common_name, category, location, year, notes, garden_id):
         dictionary = {"name": name,
                       "common_name": common_name,
                       "category": category,
-                      "location": location,
+                      "location": location, # how do I make this connected with the foreignkey
                       "year": year,
-                      "notes": notes}
+                      "notes": notes,
+                      "garden_id": garden_id}
         async with aiohttp.ClientSession() as session:
             async with session.post(f"{HOST_URL}/plants/create", data=dictionary) as response:
                 if response.status == 200:
@@ -58,8 +59,12 @@ class GardenAPIClient:
                     return False
 
     @staticmethod
-    async def search_gardens(garden_id):
-        dictionary = {"id": garden_id}
+    async def search_gardens(garden_id="", garden_name=""):
+        dictionary = {}
+        if garden_id != "":
+            dictionary["id"] = garden_id
+        if garden_name != "":
+            dictionary["name"] = garden_name
         async with aiohttp.ClientSession() as session:
             async with session.post(f"{HOST_URL}/gardens/search", data=dictionary) as response:
                 if response.status == 200:
@@ -99,13 +104,14 @@ class GardenAPIClient:
                     return False
 
     @staticmethod
-    async def update_plant(plant_id, name, common_name, category, location, year, notes):
+    async def update_plant(plant_id, name, common_name, category, location, year, notes, garden_id):
         plant_dictionary = {"name": name,
                             "common_name": common_name,
                             "category": category,
                             "location": location,
                             "year": year,
-                            "notes": notes}
+                            "notes": notes,
+                            "garden_id": garden_id}
         async with aiohttp.ClientSession() as session:
             async with session.post(f"{HOST_URL}/plants/update/{plant_id}", data=plant_dictionary) as response:
                 if response.status == 200:

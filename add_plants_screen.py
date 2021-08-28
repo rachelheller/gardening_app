@@ -50,7 +50,10 @@ class AddPlantsScreen(Screen):
         self.manager.current = "add_plant_screen"
 
     def add_confirmed_information(self, name, common_name, category, location, year, notes):
-        response = App.get_running_app().loop.run_until_complete(GardenAPIClient.add_plant(name, common_name, category, location, year, notes))
+        garden_results = App.get_running_app().loop.run_until_complete(GardenAPIClient.search_gardens(garden_name=location))
+        for garden in garden_results:
+            garden_id = garden[0]
+        response = App.get_running_app().loop.run_until_complete(GardenAPIClient.add_plant(name, common_name, category, location, year, notes, garden_id))
         if response:
             screen = self.manager.get_screen("confirmation_screen")
             screen.ids.success_message.text = "Your plant is added successfully!"

@@ -1,6 +1,10 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from garden_api_client import GardenAPIClient
+from kivy.uix.popup import Popup
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
 
 class ViewGarden(Screen):
 
@@ -36,3 +40,23 @@ class ViewGarden(Screen):
 
     def back_to_view_garden(self):
         self.manager.current = "show_garden_screen"
+
+    def delete_garden_check(self):
+        if self.this_garden_name == "no garden":
+            layout = GridLayout(cols=1, padding=10)
+            message = Label(text='"no garden" cannot be deleted.\nWould you like to hide it\nfrom the Home screen?')
+            cancel_button = Button(text="Cancel", size_hint=(0.1, 0.1))
+            no_garden_hidden = Button(text="Hide 'No Garden'", size_hint=(0.1, 0.1))
+            layout.add_widget(message)
+            layout.add_widget(cancel_button)
+            layout.add_widget(no_garden_hidden)
+            no_garden_popup = Popup(title="Deleting No Garden", content=layout)
+            no_garden_popup.open()
+            cancel_button.bind(on_release=no_garden_popup.dismiss)
+            no_garden_hidden.bind(on_release=lambda x: self.hide_no_garden(no_garden_popup))
+        else:
+            self.manager.current = "delete_garden_screen"
+
+    def hide_no_garden(self, popup):
+        App.get_running_app().loop.run_until_complete(GardenAPIClient.update_garden(garden_id=1, name="no garden", notes="hidden"))
+        popup.dismiss()
