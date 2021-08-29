@@ -6,12 +6,10 @@ from garden_api_client import GardenAPIClient
 class HomePageScreen(Screen):
 
     def data_for_gardens_list(self):
-        garden_data = App.get_running_app().loop.run_until_complete(GardenAPIClient.get_garden_list())
+        garden_data = App.get_running_app().all_gardens
         records = []
         for garden in garden_data:
             if garden[0] == 1 and garden[2] == "hidden":
-                continue
-            elif not App.get_running_app().loop.run_until_complete(GardenAPIClient.plant_search(garden_id=1)):
                 continue
             else:
                 record = {"font_size": "20sp", "text": f"{garden[1]}",

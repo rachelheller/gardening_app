@@ -60,11 +60,7 @@ class GardenAPIClient:
 
     @staticmethod
     async def search_gardens(garden_id="", garden_name=""):
-        dictionary = {}
-        if garden_id != "":
-            dictionary["id"] = garden_id
-        if garden_name != "":
-            dictionary["name"] = garden_name
+        dictionary = {"id": garden_id, "name": garden_name}
         async with aiohttp.ClientSession() as session:
             async with session.post(f"{HOST_URL}/gardens/search", data=dictionary) as response:
                 if response.status == 200:
@@ -72,7 +68,7 @@ class GardenAPIClient:
                     data = [tuple(item.values()) for item in json.loads(raw)]
                     return data
                 else:
-                    return False
+                    print(response)
 
     @staticmethod
     async def delete_garden(garden_id):

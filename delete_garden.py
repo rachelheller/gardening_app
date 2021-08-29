@@ -20,8 +20,10 @@ class DeleteGardenScreen(Screen):
         self.garden_deleted()
 
     def garden_deleted(self):
-        response = App.get_running_app().loop.run_until_complete(GardenAPIClient.delete_garden(self.this_garden_id))
+        current_garden_id = App.get_running_app().current_garden_info[0]
+        response = App.get_running_app().loop.run_until_complete(GardenAPIClient.delete_garden(current_garden_id))
         if response:
+            App.get_running_app().get_all_gardens()
             screen = self.manager.get_screen("confirmation_screen")
             screen.ids.success_message.text = "Your garden is deleted successfully!"
             screen.ids.back_button.text = "Search Plants"

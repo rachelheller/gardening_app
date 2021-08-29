@@ -18,6 +18,7 @@ from full_plant_info import FullPlantInfoScreen
 from edit_garden_screen import UpdateGarden
 from choose_garden import ChooseGarden
 from delete_garden import DeleteGardenScreen
+from garden_api_client import GardenAPIClient
 
 Builder.load_file("design.kv")
 
@@ -98,6 +99,8 @@ class MainApp(App):
         self.previous_screen = ""
         self.choose_garden_from_list_previous_screen = ""
         self.loop = asyncio.get_event_loop()
+        self.all_gardens = []
+        self.get_all_gardens()
 
     def record_previous_screen(self, screen_name):
         if screen_name == "full_plant_info_screen":
@@ -105,6 +108,9 @@ class MainApp(App):
         else:
             self.choose_garden_from_list_previous_screen = screen_name
             self.previous_screen = screen_name
+
+    def get_all_gardens(self):
+        self.all_gardens = self.loop.run_until_complete(GardenAPIClient.get_garden_list())
 
     def build(self):
         self.title = "My Gardens App"

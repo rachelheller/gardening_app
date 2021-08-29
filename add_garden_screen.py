@@ -35,6 +35,7 @@ class AddGardenScreen(Screen):
     def info_confirmed(self, name, notes):
         response = App.get_running_app().loop.run_until_complete(GardenAPIClient.create_garden(name, notes))
         if response:
+            App.get_running_app().get_all_gardens()
             self.clear_text_input_fields()
             screen = self.manager.get_screen("confirmation_screen")
             screen.ids.success_message.text = "Your garden is successfully added!"
