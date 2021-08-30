@@ -12,6 +12,7 @@ class DeleteGardenScreen(Screen):
             App.get_running_app().loop.run_until_complete(GardenAPIClient.delete_plant(plant[0]))
         self.garden_deleted()
 
+# TODO - Edit this so that plants will change location and garden_id
     def delete_garden_without_plants(self):
         current_garden_id = App.get_running_app().current_garden_info[0]
         all_plants = App.get_running_app().loop.run_until_complete(GardenAPIClient.plant_search(garden_id=current_garden_id))

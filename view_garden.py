@@ -23,14 +23,14 @@ class ViewGarden(Screen):
         self.ids.notes_for_this_garden.text = f"{garden_info[2]}"
 
         results = App.get_running_app().loop.run_until_complete(GardenAPIClient.plant_search(location=self.this_garden_name))
+        records = []
         if results:
-            records = []
             for plant in results:
                 each_plant = {"font_size": "22sp", "text": f"{plant[1]}  |  {plant[2]}",
                               "input_data": plant, "on_press": lambda _plant=plant: self.full_plant_info(_plant)}
                 records.append(each_plant)
-            self.ids.plants_list.data = [x for x in records]
-            self.ids.plants_list.refresh_from_data()
+        self.ids.plants_list.data = [x for x in records]
+        self.ids.plants_list.refresh_from_data()
 
     def full_plant_info(self, plant):
         App.get_running_app().current_plant_info = plant
