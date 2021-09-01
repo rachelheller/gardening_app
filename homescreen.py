@@ -1,12 +1,12 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from garden_api_client import GardenAPIClient
 
 
 class HomePageScreen(Screen):
 
     def data_for_gardens_list(self):
         garden_data = App.get_running_app().all_gardens
+        print(garden_data)
         records = []
         for garden in garden_data:
             if garden[0] == 1 and garden[2] == "hidden":

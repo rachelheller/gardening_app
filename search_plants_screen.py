@@ -49,7 +49,7 @@ class SearchPlantsScreen(Screen):
             return [x for x in records]
         else:
             for plant in results:
-                record = {"font_size": "20sp", "text": f"{plant[1]}  |  {plant[2]}  |  {plant[4]}",
+                record = {"font_size": "20sp", "text": f"{plant[1]}  |  {plant[4]}",
                           "input_data": plant, "on_release": lambda _plant=plant: self.full_results_info(_plant)}
                 records.append(record)
             return [x for x in records]

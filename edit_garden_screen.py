@@ -18,7 +18,7 @@ class UpdateGarden(Screen):
         garden_id = App.get_running_app().current_garden_info[0]
         response = App.get_running_app().loop.run_until_complete(GardenAPIClient.update_garden(garden_id, new_name, new_notes))
         if response:
-            new_garden_info = App.get_running_app().loop.run_until_complete(GardenAPIClient.search_gardens(garden_id))
+            new_garden_info = App.get_running_app().loop.run_until_complete(GardenAPIClient.get_garden(garden_id))
             for garden in new_garden_info:
                 App.get_running_app().current_garden_info = garden
             self.manager.get_screen("show_garden_screen").populate_info()
