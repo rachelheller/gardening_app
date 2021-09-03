@@ -112,6 +112,11 @@ class MainApp(App):
     def get_all_gardens(self):
         self.all_gardens = self.loop.run_until_complete(GardenAPIClient.get_garden_list())
 
+    def garden_name(self, garden_id):
+        for garden in self.all_gardens:
+            if garden_id == garden[0]:
+                return garden[1]
+
     def build(self):
         self.title = "My Gardens App"
         return RootWidget()

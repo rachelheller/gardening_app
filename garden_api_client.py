@@ -4,6 +4,11 @@ import os
 
 HOST_URL = os.environ.get("HOST_URL")
 
+class Plants:
+    pass
+
+class Gardens:
+    pass
 
 class GardenAPIClient:
 

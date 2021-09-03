@@ -17,12 +17,11 @@ class ViewGarden(Screen):
     def populate_info(self):
         garden_info = App.get_running_app().current_garden_info
         self.this_garden_id = garden_info[0]
-        self.this_garden_name = garden_info[1]
         self.this_garden_notes = garden_info[2]
         self.ids.current_garden_name.text = f"[u]{(garden_info[1]).title()}[/u]"
         self.ids.notes_for_this_garden.text = f"{garden_info[2]}"
 
-        results = App.get_running_app().loop.run_until_complete(GardenAPIClient.plant_search(location=self.this_garden_name))
+        results = App.get_running_app().loop.run_until_complete(GardenAPIClient.plant_search(garden_id=self.this_garden_id))
         records = []
         if results:
             for plant in results:

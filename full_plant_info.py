@@ -11,10 +11,11 @@ class FullPlantInfoScreen(Screen):
 
     def populate_plant_info(self):
         current_plant = App.get_running_app().current_plant_info
+        garden_name = App.get_running_app().garden_name(current_plant[7])
         self.ids.full_info_name.text = current_plant[1].title()
         self.ids.full_info_common_name.text = f"[i]Common Name:[/i]  {current_plant[2].title()}"
         self.ids.full_info_category.text = f"[i]Category:[/i]  {current_plant[3].title()}"
-        self.ids.full_info_location.text = f"[i]Garden:[/i]  {current_plant[4].title()}"
+        self.ids.full_info_location.text = f"[i]Garden:[/i]  {garden_name.title()}"
         self.ids.full_info_year.text = f"[i]Year Planted:[/i]  {current_plant[5]}"
         self.ids.full_info_notes.text = f"[i]Notes:[/i]  {current_plant[6]}"
 
